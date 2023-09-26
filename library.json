@@ -1,0 +1,21 @@
+{
+    "name": "blinkSequencer",
+    "version": "0.0.1",
+    "description": "Blinking sequencer class with patterns",
+    "authors": [
+      {
+        "name": "Manuel Gonzalvez",
+        "email": "manuelgonzalvez@gmail.com",
+        "maintainer": true
+      }
+    ],
+
+    "frameworks": "arduino",
+    "platforms": "espressif32",
+    "build": {
+      "includeDir": "lib/blinkSequencer",
+      "flags": [
+        "-I lib/blinkSequencer/src"
+      ]
+    }
+  }
