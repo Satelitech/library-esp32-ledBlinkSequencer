@@ -53,11 +53,14 @@ public:
     void setPattern(blinkPattern _periodType, bool force = false)
     {
         if (!this->context.setPeriod || force)
-        {
-            this->context.periodType = _periodType;
-            this->context.setPeriod = true;
+        {   
+            if(_periodType != this->context.periodType)
+            {
             this->_firstTrigger = true;
             this->_phase = 0;
+            }
+            this->context.periodType = _periodType;
+            this->context.setPeriod = true;
         }
     }
 
