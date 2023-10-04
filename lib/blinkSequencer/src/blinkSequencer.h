@@ -13,24 +13,24 @@ typedef enum
     LONG_BLINK,   //* xxxx----
     DOUBLE_BLINK, //* xx--xx--
     ON            //* xxxxxxxx
-} ledBlinkPeriod;
+} blinkPattern;
 
 typedef struct
 {
-    ledBlinkPeriod periodType;
+    blinkPattern periodType;
     bool setPeriod;
     uint8_t phase;
-} ledPeriod;
+} blinkContext;
 
 #define STEP_INTERVAL 125
 
-class leds
+class sequencer
 {
 
 public:
-    leds()
+    sequencer()
         : _phase(0),
-          oldMillis(0),
+          _oldMillis(0),
           _firstTrigger(false)
     {
     }
@@ -40,26 +40,27 @@ public:
         if (this->_firstTrigger)
         {
             this->_firstTrigger = false;
-            this->oldMillis = millis();
+            this->_oldMillis = millis();
         }
         //* en ejecuciones siguientes, respeto el momento de la llamada del metodo
-        if (millis() - this->oldMillis > STEP_INTERVAL)
+        if (millis() - this->_oldMillis > STEP_INTERVAL)
         {
-            this->oldMillis = millis();
+            this->_oldMillis = millis();
             this->incrementCounter();
         }
     }
 
-
-
-    void setPattern(ledBlinkPeriod _periodType, bool force = false)
+    void setPattern(blinkPattern _periodType, bool force = false)
     {
-        if (!this->_periodStruct.setPeriod || force)
-        {
-            this->_periodStruct.periodType = _periodType;
-            this->_periodStruct.setPeriod = true;
+        if (!this->context.setPeriod || force)
+        {   
+            if(_periodType != this->context.periodType)
+            {
             this->_firstTrigger = true;
             this->_phase = 0;
+            }
+            this->context.periodType = _periodType;
+            this->context.setPeriod = true;
         }
     }
 
@@ -75,11 +76,11 @@ public:
 
     bool getState()
     {
-        if (!this->_periodStruct.setPeriod)
+        if (!this->context.setPeriod)
             return false;
 
-        uint8_t phase = this->_phase;
-        switch (this->_periodStruct.periodType)
+        // uint8_t phase = this->_phase;
+        switch (this->context.periodType)
         {
         case OFF:
             return false;
@@ -90,58 +91,62 @@ public:
             break;
 
         case BANG:
-            if (phase == 0)
+            if (this->_phase == 0)
                 return true;
             return false;
             break;
 
         case DOUBLE_BANG:
-            if (phase == 0 || phase == 4)
+            if (this->_phase == 0 || this->_phase == 4)
                 return true;
             return false;
             break;
 
         case TRI_BANG:
-            if (phase == 0 || phase == 3 || phase == 6)
+            if (this->_phase == 0 || this->_phase == 3 || this->_phase == 6)
                 return true;
             return false;
             break;
         case QUAD_BANG:
-            if (phase == 0 || phase == 2 || phase == 4 || phase == 6)
+            if (this->_phase == 0 || this->_phase == 2 || this->_phase == 4 || this->_phase == 6)
                 return true;
             return false;
             break;
         case BLINK:
-            if (phase == 0 || phase == 1)
+            if (this->_phase == 0 || this->_phase == 1)
                 return true;
             return false;
             break;
         case LONG_BLINK:
-            if (phase == 0 || phase == 1 || phase == 2 || phase == 3)
+            if (this->_phase == 0 || this->_phase == 1 || this->_phase == 2 || this->_phase == 3)
                 return true;
             return false;
             break;
         case DOUBLE_BLINK:
-            if (phase == 0 || phase == 1 || phase == 4 || phase == 5)
+            if (this->_phase == 0 || this->_phase == 1 || this->_phase == 4 || this->_phase == 5)
                 return true;
             return false;
             break;
+        default:
+            return false;
+            break;
         }
+        return false;
     }
 
 private:
     uint8_t _phase;
-    ledPeriod _periodStruct;
-    unsigned long oldMillis;
+    blinkContext context;
+    unsigned long _oldMillis;
     bool _firstTrigger;
 
-        void incrementCounter()
+    void incrementCounter()
     {
-        _phase++;
-        if (_phase > 7)
+        this->_phase++;
+        if (this->_phase > 7)
         {
-            this->_periodStruct.setPeriod = false;
-            _phase = 0;
+            this->context.setPeriod = false;
+            this->_phase = 0;
         }
     }
 };
