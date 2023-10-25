@@ -88,12 +88,12 @@ public:
 
     void forceOn()
     {
-        this->setPattern(ON, true);
+        this->setPattern(ON, true,true);
     }
 
     void forceOff()
     {
-        this->setPattern(OFF, true);
+        this->setPattern(OFF, true,true);
     }
 
     bool getState()
