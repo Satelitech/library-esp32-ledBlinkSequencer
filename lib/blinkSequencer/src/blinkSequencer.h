@@ -12,7 +12,11 @@ typedef enum
     BLINK,        //* xx------
     LONG_BLINK,   //* xxxx----
     DOUBLE_BLINK, //* xx--xx--
-    ON            //* xxxxxxxx
+    ON,           //* xxxxxxxx
+    PULSE_SINGLE, //* x---------------
+    PULSE_DOUBLE, //* x-x-------------
+    PULSE_QUAD,   //* x-x-x-x---------
+    PULSE_OCTO    //* x-x-x-x-x-x-x-x-
 } blinkPattern;
 
 enum sequencerMode
@@ -129,6 +133,26 @@ public:
             if (this->_phase == doubleIt(0) || this->_phase == doubleIt(2) || this->_phase == doubleIt(4) || this->_phase == doubleIt(6))
                 return true;
             return false;
+            break;
+
+        case PULSE_SINGLE:
+            if (this->_phase == 0)
+                return true;
+            return false;
+            break;
+
+        case PULSE_DOUBLE:
+            if (this->_phase == 0 || this->_phase == 2)
+                return true;
+            return false;
+            break;
+        case PULSE_QUAD:
+            if (this->_phase == 0 || this->_phase == 2 || this->_phase == 4 || this->_phase == 6)
+                return true;
+            return false;
+            break;
+        case PULSE_OCTO:
+            return (this->_phase % 2 == 0);
             break;
 
         case BLINK:
