@@ -72,11 +72,11 @@ public:
         }
     }
 
-    void setPattern(blinkPattern _periodType, bool force = false)
+    void setPattern(blinkPattern _periodType, bool force = false, bool restart = false)
     {
         if (!this->context.setPeriod || force)
-        {
-            if (_periodType != this->context.periodType)
+        {   
+            if ((_periodType != this->context.periodType) || restart)
             {
                 this->_firstTrigger = true;
                 this->_phase = 0;
